@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@helure</title>
+    <title>@hilure</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Montserrat:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary-color: #ff69b4;
@@ -11,6 +12,7 @@
             --text-color: #fff;
             --bg-color: #000;
             --progress-color: rgba(255, 105, 180, 0.3);
+            --cursor-glow: 0 0 20px rgba(255, 105, 180, 0.7);
         }
         
         body {
@@ -22,25 +24,28 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Montserrat', sans-serif;
             color: var(--text-color);
+            cursor: none;
         }
         
-        #helure {
+        #hilure {
             position: absolute;
             color: var(--text-color);
-            font-size: 4rem;
+            font-size: 5rem;
             text-shadow: 0 0 15px var(--primary-color);
             z-index: 100;
             transition: all 0.3s ease;
             top: 10%;
             font-weight: 800;
             letter-spacing: 2px;
+            font-family: 'Pacifico', cursive;
         }
         
-        #helure:hover {
+        #hilure:hover {
             color: var(--primary-color);
-            text-shadow: 0 0 20px var(--secondary-color);
+            text-shadow: 0 0 25px var(--secondary-color);
+            transform: scale(1.05);
         }
         
         .player-container {
@@ -189,6 +194,8 @@
             transform: rotate(45deg);
             animation: fall linear infinite;
             opacity: 0.8;
+            filter: drop-shadow(0 0 8px var(--primary-color));
+            z-index: 10;
         }
         
         .heart:before, .heart:after {
@@ -198,6 +205,7 @@
             background-color: var(--primary-color);
             border-radius: 50%;
             position: absolute;
+            filter: drop-shadow(0 0 5px var(--secondary-color));
         }
         
         .heart:before {
@@ -217,6 +225,7 @@
             font-weight: bold;
             animation: fall linear infinite;
             text-shadow: 0 0 10px #7CFC00;
+            filter: drop-shadow(0 0 5px #7CFC00);
         }
         
         @keyframes fall {
@@ -243,6 +252,7 @@
             background: var(--primary-color);
             border-radius: 2px;
             transition: height 0.1s;
+            filter: drop-shadow(0 0 3px var(--secondary-color));
         }
         
         #music-notice {
@@ -268,10 +278,56 @@
             50% { box-shadow: 0 0 20px rgba(255,105,180,0.8); }
             100% { box-shadow: 0 0 5px rgba(255,105,180,0.5); }
         }
+        
+        /* Custom cursor */
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(255, 105, 180, 0.5);
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            mix-blend-mode: screen;
+            z-index: 9999;
+            transition: transform 0.1s, width 0.2s, height 0.2s;
+            box-shadow: var(--cursor-glow);
+        }
+        
+        .custom-cursor.active {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 20, 147, 0.3);
+        }
+        
+        /* Click effect */
+        .click-effect {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 105, 180, 0.7);
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 9998;
+            animation: clickFade 1s forwards;
+            box-shadow: 0 0 15px var(--primary-color);
+        }
+        
+        @keyframes clickFade {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(3);
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 <body>
-    <div id="helure">@hilure</div>
+    <div id="hilure">@hilure</div>
     
     <div class="player-container">
         <div class="track-info" id="track-info">Выберите трек</div>
@@ -478,6 +534,7 @@
                 heart.style.left = Math.random() * window.innerWidth + 'px';
                 heart.style.top = '-20px';
                 heart.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                heart.style.opacity = Math.random() * 0.5 + 0.5;
                 document.body.appendChild(heart);
                 
                 setTimeout(() => {
@@ -500,6 +557,41 @@
             }
         }
         
+        // Кастомный курсор
+        function initCustomCursor() {
+            const cursor = document.createElement('div');
+            cursor.className = 'custom-cursor';
+            document.body.appendChild(cursor);
+            
+            document.addEventListener('mousemove', (e) => {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+            });
+            
+            document.addEventListener('mousedown', () => {
+                cursor.classList.add('active');
+            });
+            
+            document.addEventListener('mouseup', () => {
+                cursor.classList.remove('active');
+            });
+        }
+        
+        // Эффект клика
+        function initClickEffect() {
+            document.addEventListener('click', (e) => {
+                const effect = document.createElement('div');
+                effect.className = 'click-effect';
+                effect.style.left = e.clientX + 'px';
+                effect.style.top = e.clientY + 'px';
+                document.body.appendChild(effect);
+                
+                setTimeout(() => {
+                    effect.remove();
+                }, 1000);
+            });
+        }
+        
         // Инициализация
         function init() {
             loadTrack(currentTrack);
@@ -511,6 +603,10 @@
                 setTimeout(createElements, i * 200);
             }
             setInterval(createElements, 300);
+            
+            // Инициализация курсора и эффектов
+            initCustomCursor();
+            initClickEffect();
         }
         
         // События
