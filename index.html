@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Montserrat:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #ff69b4;
+            --primary-color: #ff69b4; /* Розовый по умолчанию */
             --secondary-color: #ff1493;
             --text-color: #fff;
             --bg-color: #000;
@@ -48,6 +48,51 @@
             transform: scale(1.05);
         }
         
+        /* Стили для темы */
+        .theme-selector {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+        
+        .theme-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 5px;
+            border: 2px solid white;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .theme-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(255,255,255,0.7);
+        }
+        
+        .theme-btn.active {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px white;
+        }
+        
+        #theme-pink {
+            background: #ff69b4;
+        }
+        
+        #theme-blue {
+            background: #4285f4;
+        }
+        
+        #theme-green {
+            background: #0f9d58;
+        }
+        
+        #theme-purple {
+            background: #9c27b0;
+        }
+        
         .player-container {
             position: absolute;
             bottom: 15%;
@@ -56,10 +101,10 @@
             background: rgba(0, 0, 0, 0.8);
             padding: 20px;
             border-radius: 20px;
-            box-shadow: 0 0 30px rgba(255, 105, 180, 0.6);
+            box-shadow: 0 0 30px var(--cursor-glow);
             z-index: 100;
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 105, 180, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
         .track-info {
@@ -269,14 +314,14 @@
             max-width: 300px;
             margin: 0 auto;
             backdrop-filter: blur(5px);
-            border: 1px solid rgba(255, 105, 180, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             animation: pulse 2s infinite;
         }
         
         @keyframes pulse {
-            0% { box-shadow: 0 0 5px rgba(255,105,180,0.5); }
-            50% { box-shadow: 0 0 20px rgba(255,105,180,0.8); }
-            100% { box-shadow: 0 0 5px rgba(255,105,180,0.5); }
+            0% { box-shadow: 0 0 5px var(--cursor-glow); }
+            50% { box-shadow: 0 0 20px var(--cursor-glow); }
+            100% { box-shadow: 0 0 5px var(--cursor-glow); }
         }
         
         /* Custom cursor */
@@ -328,6 +373,14 @@
 </head>
 <body>
     <div id="hilure">@hilure</div>
+    
+    <!-- Theme selector -->
+    <div class="theme-selector">
+        <div class="theme-btn active" id="theme-pink" data-primary="#ff69b4" data-secondary="#ff1493"></div>
+        <div class="theme-btn" id="theme-blue" data-primary="#4285f4" data-secondary="#34a853"></div>
+        <div class="theme-btn" id="theme-green" data-primary="#0f9d58" data-secondary="#34a853"></div>
+        <div class="theme-btn" id="theme-purple" data-primary="#9c27b0" data-secondary="#673ab7"></div>
+    </div>
     
     <div class="player-container">
         <div class="track-info" id="track-info">Выберите трек</div>
@@ -398,6 +451,7 @@
         const trackInfo = document.getElementById('track-info');
         const musicNotice = document.getElementById('music-notice');
         const visualizer = document.getElementById('visualizer');
+        const themeButtons = document.querySelectorAll('.theme-btn');
         
         // Создаем визуализатор
         for (let i = 0; i < 50; i++) {
@@ -411,6 +465,18 @@
         // Переменные
         let isPlaying = false;
         let currentTrack = 0;
+        
+        // Функция смены темы
+        function changeTheme(primary, secondary) {
+            document.documentElement.style.setProperty('--primary-color', primary);
+            document.documentElement.style.setProperty('--secondary-color', secondary);
+            document.documentElement.style.setProperty('--progress-color', `${primary}30`);
+            document.documentElement.style.setProperty('--cursor-glow', `0 0 20px ${primary}70`);
+            
+            // Обновляем активную кнопку темы
+            themeButtons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
         
         // Загрузка трека
         function loadTrack(trackIndex) {
@@ -607,6 +673,15 @@
             // Инициализация курсора и эффектов
             initCustomCursor();
             initClickEffect();
+            
+            // Обработчики тем
+            themeButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const primary = this.getAttribute('data-primary');
+                    const secondary = this.getAttribute('data-secondary');
+                    changeTheme(primary, secondary);
+                });
+            });
         }
         
         // События
@@ -625,7 +700,7 @@
             musicNotice.style.display = 'none';
         }, { once: true });
         
-        // Запуск ..
+        // Запуск
         init();
     </script>
 </body>
