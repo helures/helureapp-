@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Helure</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+        
+        #helure {
+            position: absolute;
+            color: #fff;
+            font-size: 3rem;
+            text-shadow: 0 0 10px #fff;
+            z-index: 100;
+            transition: all 0.3s ease;
+            top: 20%;
+        }
+        
+        #helure:hover {
+            color: #ff69b4;
+            text-shadow: 0 0 15px #ff69b4;
+        }
+        
+        .player-container {
+            position: absolute;
+            bottom: 20%;
+            width: 80%;
+            max-width: 400px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.5);
+            z-index: 100;
+        }
+        
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .play-btn {
+            background: #ff69b4;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .play-btn:hover {
+            background: #ff1493;
+            transform: scale(1.1);
+        }
+        
+        .time {
+            color: white;
+            font-size: 12px;
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        .progress-container {
+            flex-grow: 1;
+            height: 5px;
+            background: #333;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 10px;
+        }
+        
+        .progress {
+            height: 100%;
+            background: #ff69b4;
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.1s;
+        }
+        
+        .volume-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .volume-icon {
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        .volume-slider {
+            flex-grow: 1;
+            height: 5px;
+            background: #333;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .volume-progress {
+            height: 100%;
+            background: #ff69b4;
+            border-radius: 5px;
+            width: 100%;
+        }
+        
+        .heart {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #ff69b4;
+            transform: rotate(45deg);
+            animation: fall linear infinite;
+        }
+        
+        .heart:before, .heart:after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background-color: #ff69b4;
+            border-radius: 50%;
+            position: absolute;
+        }
+        
+        .heart:before {
+            top: -10px;
+            left: 0;
+        }
+        
+        .heart:after {
+            top: 0;
+            left: -10px;
+        }
+        
+        .money {
+            position: absolute;
+            color: #7CFC00;
+            font-size: 20px;
+            font-weight: bold;
+            animation: fall linear infinite;
+        }
+        
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+
+        #music-notice {
+            position: fixed;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: white;
+            background: rgba(0,0,0,0.5);
+            padding: 10px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div id="helure">helure</div>
+    
+    <div class="player-container">
+        <div class="controls">
+            <button class="play-btn">▶</button>
+            <div class="time">0:00 / 0:00</div>
+        </div>
+        <div class="progress-container">
+            <div class="progress"></div>
+        </div>
+        <div class="volume-container">
+            <div class="volume-icon">🔊</div>
+            <div class="volume-slider">
+                <div class="volume-progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="music-notice">
+        Нажмите в любом месте, чтобы включить музыку
+    </div>
+    
+    <script>
+        // Audio setup - используем raw-ссылку на музыку из GitHub
+        const audio = new Audio('https://raw.githubusercontent.com/helures/helureapp-/main/music.mp3');
+        const playBtn = document.querySelector('.play-btn');
+        const progressContainer = document.querySelector('.progress-container');
+        const progress = document.querySelector('.progress');
+        const timeDisplay = document.querySelector('.time');
+        const volumeSlider = document.querySelector('.volume-slider');
+        const volumeProgress = document.querySelector('.volume-progress');
+        const volumeIcon = document.querySelector('.volume-icon');
+        const musicNotice = document.getElementById('music-notice');
+        
+        let isPlaying = false;
+        
+        // Format time (seconds to MM:SS)
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+        
+        // Update progress bar
+        function updateProgress() {
+            const { currentTime, duration } = audio;
+            const progressPercent = (currentTime / duration) * 100;
+            progress.style.width = `${progressPercent}%`;
+            timeDisplay.textContent = `${formatTime(currentTime)} / ${formatTime(duration)}`;
+        }
+        
+        // Set progress when clicked on progress bar
+        function setProgress(e) {
+            const width = this.clientWidth;
+            const clickX = e.offsetX;
+            const duration = audio.duration;
+            audio.currentTime = (clickX / width) * duration;
+        }
+        
+        // Set volume
+        function setVolume(e) {
+            const width = this.clientWidth;
+            const clickX = e.offsetX;
+            const volume = clickX / width;
+            audio.volume = volume;
+            volumeProgress.style.width = `${volume * 100}%`;
+            
+            // Update volume icon
+            if (volume === 0) {
+                volumeIcon.textContent = '🔇';
+            } else if (volume < 0.5) {
+                volumeIcon.textContent = '🔉';
+            } else {
+                volumeIcon.textContent = '🔊';
+            }
+        }
+        
+        // Toggle mute
+        function toggleMute() {
+            audio.muted = !audio.muted;
+            if (audio.muted) {
+                volumeIcon.textContent = '🔇';
+                volumeProgress.style.width = '0%';
+            } else {
+                setVolume({ offsetX: audio.volume * volumeSlider.clientWidth, target: volumeSlider });
+            }
+        }
+        
+        // Toggle play/pause
+        function togglePlay() {
+            if (isPlaying) {
+                audio.pause();
+                playBtn.textContent = '▶';
+            } else {
+                audio.play()
+                    .then(() => {
+                        playBtn.textContent = '❚❚';
+                        musicNotice.style.display = 'none';
+                    })
+                    .catch(e => {
+                        musicNotice.style.display = 'block';
+                        console.error('Playback failed:', e);
+                    });
+            }
+            isPlaying = !isPlaying;
+        }
+        
+        // Event listeners
+        playBtn.addEventListener('click', togglePlay);
+        progressContainer.addEventListener('click', setProgress);
+        volumeSlider.addEventListener('click', setVolume);
+        volumeIcon.addEventListener('click', toggleMute);
+        
+        // Time updates
+        audio.addEventListener('timeupdate', updateProgress);
+        audio.addEventListener('ended', () => {
+            playBtn.textContent = '▶';
+            isPlaying = false;
+        });
+        audio.addEventListener('loadedmetadata', () => {
+            timeDisplay.textContent = `0:00 / ${formatTime(audio.duration)}`;
+        });
+        
+        // Set initial volume
+        audio.volume = 0.7;
+        volumeProgress.style.width = '70%';
+
+        // Hide notice after first interaction
+        document.body.addEventListener('click', () => {
+            musicNotice.style.display = 'none';
+        }, { once: true });
+        
+        // Create hearts and money
+        function createElements() {
+            // Create hearts (more frequent)
+            if (Math.random() > 0.3) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.style.left = Math.random() * window.innerWidth + 'px';
+                heart.style.top = '-20px';
+                heart.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                document.body.appendChild(heart);
+                
+                // Remove heart after animation completes
+                setTimeout(() => {
+                    heart.remove();
+                }, parseFloat(heart.style.animationDuration) * 1000);
+            }
+            
+            // Create money (less frequent)
+            if (Math.random() > 0.9) {
+                const money = document.createElement('div');
+                money.className = 'money';
+                money.textContent = '$';
+                money.style.left = Math.random() * window.innerWidth + 'px';
+                money.style.top = '-20px';
+                money.style.animationDuration = (Math.random() * 5 + 3) + 's';
+                document.body.appendChild(money);
+                
+                // Remove money after animation completes
+                setTimeout(() => {
+                    money.remove();
+                }, parseFloat(money.style.animationDuration) * 1000);
+            }
+        }
+        
+        // Initial creation
+        for (let i = 0; i < 10; i++) {
+            setTimeout(createElements, i * 300);
+        }
+        
+        // Continuous creation
+        setInterval(createElements, 300);
+    </script>
+</body>
+</html>
