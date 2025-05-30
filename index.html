@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tonnel Transfer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0;
             padding: 0;
-            background-color: #121212;
+            background-color: #14222a;
             color: #FFD700;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Montserrat', sans-serif;
             overflow: hidden;
             height: 100vh;
             display: flex;
@@ -20,21 +21,42 @@
         }
         
         .container {
-            text-align: center;
+            display: flex;
+            align-items: center;
+            gap: 30px;
             z-index: 10;
+            padding: 20px;
+            max-width: 900px;
+        }
+        
+        .logo {
+            height: 100px;
+            width: auto;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+        
+        .text-content {
+            display: flex;
+            flex-direction: column;
         }
         
         h1 {
-            font-size: 4rem;
-            margin-bottom: 1rem;
+            font-size: 3.5rem;
+            margin: 0;
             text-transform: uppercase;
             letter-spacing: 3px;
+            line-height: 1.1;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            font-weight: 700;
         }
         
         .subtitle {
-            font-size: 1.5rem;
-            margin-bottom: 3rem;
+            font-size: 1.3rem;
+            margin-top: 15px;
             opacity: 0.9;
+            letter-spacing: 0.5px;
+            line-height: 1.5;
         }
         
         footer {
@@ -43,6 +65,22 @@
             right: 20px;
             font-size: 0.8rem;
             opacity: 0.6;
+        }
+        
+        .telegram-link {
+            position: absolute;
+            left: 20px;
+            bottom: 20px;
+        }
+        
+        .telegram-logo {
+            height: 40px;
+            width: 40px;
+            transition: transform 0.3s ease;
+        }
+        
+        .telegram-logo:hover {
+            transform: scale(1.1);
         }
         
         .particle {
@@ -67,9 +105,16 @@
 </head>
 <body>
     <div class="container">
-        <h1>Tonnel Transfer</h1>
-        <div class="subtitle">use for quality P2P transactions</div>
+        <img src="https://i.ibb.co/xSV8z7xg/tonnel.jpg" alt="Tonnel Logo" class="logo">
+        <div class="text-content">
+            <h1>TONNEL TRANSFER</h1>
+            <div class="subtitle">Secure and efficient P2P transactions with lightning-fast speed and military-grade encryption</div>
+        </div>
     </div>
+    
+    <a href="https://t.me/tonnel_en" class="telegram-link" target="_blank">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="Telegram" class="telegram-logo">
+    </a>
     
     <footer>Tonnel Network all rights reserved</footer>
     
@@ -101,29 +146,6 @@
         
         // Create particles periodically
         setInterval(createParticle, 300);
-        
-        // Also create particles on mouse move
-        document.addEventListener('mousemove', (e) => {
-            if(Math.random() > 0.7) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                
-                const size = Math.random() * 10 + 5;
-                particle.style.width = `${size}px`;
-                particle.style.height = `${size}px`;
-                
-                particle.style.left = `${e.clientX - size/2}px`;
-                particle.style.top = `${e.clientY - size/2}px`;
-                
-                particle.style.animation = `particle-anim ${Math.random() * 1 + 0.5}s forwards`;
-                
-                document.body.appendChild(particle);
-                
-                setTimeout(() => {
-                    particle.remove();
-                }, 500);
-            }
-        });
     </script>
 </body>
 </html>
