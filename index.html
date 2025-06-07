@@ -8,110 +8,80 @@
 <style>
   body {
     margin: 0;
-    min-height: 100vh;
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #000000;
-    color: #e0f0ff;
-    padding: 20px;
+    background: #001f3f;
+    color: #a0cfff;
   }
-
   .container {
-    background-color: #000000;
-    border: 2px solid #0099ff;
+    background: #003366;
     border-radius: 12px;
-    box-shadow: 0 0 10px #0099ff;
-    padding: 30px 25px;
-    max-width: 400px;
-    width: 100%;
-    box-sizing: border-box;
+    padding: 25px 20px;
+    width: 320px;
+    box-shadow: 0 0 15px #3399ffaa;
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 16px;
   }
-
-  h2#title {
-    margin: 0 0 10px 0;
-    font-weight: 700;
+  h2 {
+    margin: 0;
     text-align: center;
-    text-shadow: 0 0 8px #0099ffcc;
+    font-weight: 600;
+    text-shadow: 0 0 8px #66b3ffcc;
   }
-
   input {
-    padding: 12px 15px;
-    font-size: 17px;
+    padding: 12px 14px;
     border-radius: 8px;
-    border: 2px solid #0099ff;
-    background: #000000;
-    color: #e0f0ff;
+    border: 2px solid #3399ff;
+    background: #002244;
+    color: #a0cfff;
+    font-size: 16px;
     outline: none;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    transition: border-color 0.3s;
   }
-
   input::placeholder {
-    color: #5599ffaa;
+    color: #6699ccaa;
   }
-
   input:focus {
-    border-color: #00bbff;
-    box-shadow: 0 0 8px #00bbffcc;
-    background: #001122;
+    border-color: #66b3ff;
+    background: #004080;
   }
-
   button {
-    padding: 12px;
-    background-color: transparent;
-    border: 2px solid #0099ff;
+    padding: 12px 0;
+    background: transparent;
+    border: 2px solid #3399ff;
     border-radius: 12px;
+    color: #a0cfff;
+    font-weight: 600;
     cursor: pointer;
-    width: 50px;
-    height: 50px;
-    align-self: center;
-    box-shadow: 0 0 10px #0099ff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: box-shadow 0.3s ease;
+    box-shadow: 0 0 12px #3399ffaa;
+    transition: box-shadow 0.3s;
   }
-
   button:hover:not(:disabled) {
-    box-shadow: 0 0 18px #00bbff;
+    box-shadow: 0 0 20px #66b3ff;
   }
-
   button:disabled {
-    border-color: #003366;
-    box-shadow: none;
+    border-color: #004466;
+    color: #446688;
     cursor: not-allowed;
-    color: #444;
+    box-shadow: none;
   }
-
-  /* Иконка галочки */
-  button svg {
-    fill: #0099ff;
-    width: 24px;
-    height: 24px;
-  }
-
   .error {
-    color: #ff4c4c;
-    font-size: 14px;
+    color: #ff6666;
     text-align: center;
     min-height: 18px;
     user-select: none;
-    text-shadow: 0 0 3px #ff4c4c88;
-  }
-
-  .hidden {
-    display: none;
+    text-shadow: 0 0 3px #ff666688;
   }
 </style>
 </head>
 <body>
   <div class="container" id="pinForm">
     <h2 id="title">Введите ваш пин-код</h2>
-    <div id="createPinFields" class="hidden">
+    <div id="createPinFields" style="display:none;">
       <input type="password" id="newPin" placeholder="Новый пин-код (4 цифры)" maxlength="4" inputmode="numeric" />
       <input type="password" id="confirmPin" placeholder="Подтвердите пин-код" maxlength="4" inputmode="numeric" />
     </div>
@@ -119,12 +89,7 @@
       <input type="password" id="pinCode" placeholder="Пин-код (4 цифры)" maxlength="4" inputmode="numeric" />
     </div>
     <p id="error" class="error"></p>
-    <button id="submitBtn" disabled aria-label="Подтвердить">
-      <!-- Иконка галочки -->
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-        <path d="M20.285 6.709a1 1 0 0 0-1.414-1.418l-9.172 9.19-4.243-4.246a1 1 0 1 0-1.415 1.414l4.95 4.95a1 1 0 0 0 1.415 0z"/>
-      </svg>
-    </button>
+    <button id="submitBtn" disabled>Подтвердить</button>
   </div>
 
 <script>
@@ -155,12 +120,14 @@
 
     if (hasPin) {
       title.textContent = 'Введите ваш пин-код';
-      createPinFields.classList.add('hidden');
-      verifyPinField.classList.remove('hidden');
+      createPinFields.style.display = 'none';
+      verifyPinField.style.display = 'block';
     } else {
       title.textContent = 'Создайте пин-код';
-      createPinFields.classList.remove('hidden');
-      verifyPinField.classList.add('hidden');
+      createPinFields.style.display = 'flex';
+      createPinFields.style.flexDirection = 'column';
+      createPinFields.style.gap = '10px';
+      verifyPinField.style.display = 'none';
     }
 
     function validateInputs() {
@@ -183,7 +150,6 @@
     submitBtn.addEventListener('click', () => {
       if (hasPin) {
         const pinCode = pinCodeInput.value;
-
         if (pinCode.length !== 4 || !/^\d{4}$/.test(pinCode)) {
           error.textContent = 'Пин-код должен состоять из 4 цифр';
           return;
@@ -192,15 +158,12 @@
         const correctPin = localStorage.getItem(`pin_${userId}`);
 
         if (pinCode === correctPin) {
-          // Отправка данных боту
-          tg.sendData(
-            JSON.stringify({
-              action: 'verify_pin',
-              deal_id: dealId,
-              pin_code: pinCode,
-              user_id: userId,
-            })
-          );
+          tg.sendData(JSON.stringify({
+            action: 'verify_pin',
+            deal_id: dealId,
+            pin_code: pinCode,
+            user_id: userId,
+          }));
           error.textContent = 'Данные отправлены, ждите подтверждения...';
           submitBtn.disabled = true;
         } else {
@@ -222,14 +185,13 @@
 
         localStorage.setItem(`pin_${userId}`, newPin);
 
-        tg.sendData(
-          JSON.stringify({
-            action: 'create_pin',
-            deal_id: dealId,
-            pin_code: newPin,
-            user_id: userId,
-          })
-        );
+        tg.sendData(JSON.stringify({
+          action: 'create_pin',
+          deal_id: dealId,
+          pin_code: newPin,
+          user_id: userId,
+        }));
+
         error.textContent = 'Пин-код создан и данные отправлены';
         submitBtn.disabled = true;
       }
@@ -237,20 +199,6 @@
 
     validateInputs();
   }
-console.log("Отправляем данные:", JSON.stringify({
-  action: 'verify_pin',
-  deal_id: dealId,
-  pin_code: pinCode,
-  user_id: userId,
-}));
-tg.sendData(
-  JSON.stringify({
-    action: 'verify_pin',
-    deal_id: dealId,
-    pin_code: pinCode,
-    user_id: userId,
-  })
-);
 
   init();
 </script>
