@@ -1,592 +1,170 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TonTransfer - Secure Deals</title>
+    <title>Подтверждение сделки</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-color: #0f0f12;
-            --card-color: #1a1a1f;
-            --primary-color: #0088cc;
-            --ton-color: #0088cc;
-            --text-color: #ffffff;
-            --secondary-text: #a1a1a8;
-            --border-radius: 16px;
-            --padding: 16px;
-            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-        
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            min-height: 100vh;
-            padding: var(--padding);
-            line-height: 1.6;
-        }
-        
-        .container {
-            max-width: 600px;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 400px;
             margin: 0 auto;
-            animation: fadeIn 0.5s ease-out;
         }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .header {
+        .container {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 24px;
-            padding: 12px 0;
+            flex-direction: column;
+            gap: 15px;
         }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            font-size: 22px;
-            font-weight: 700;
-            background: linear-gradient(90deg, var(--ton-color), #29a7ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        input {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
-        
-        .logo-icon {
-            width: 28px;
-            height: 28px;
-            margin-right: 10px;
-            background-color: var(--ton-color);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .logo-icon svg {
-            width: 16px;
-            height: 16px;
-            fill: white;
-        }
-        
-        .user-balance {
-            background-color: rgba(0, 136, 204, 0.1);
-            padding: 8px 12px;
-            border-radius: var(--border-radius);
-            font-size: 14px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-        }
-        
-        .user-balance svg {
-            margin-right: 6px;
-        }
-        
-        .btn {
-            background-color: var(--primary-color);
+        button {
+            padding: 10px 15px;
+            background-color: #0088cc;
             color: white;
             border: none;
-            border-radius: var(--border-radius);
-            padding: 14px 16px;
-            font-size: 16px;
-            font-weight: 600;
+            border-radius: 5px;
             cursor: pointer;
-            width: 100%;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            font-size: 16px;
         }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 136, 204, 0.2);
+        button:disabled {
+            background-color: #cccccc;
         }
-        
-        .btn:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 4px rgba(0, 136, 204, 0.2);
-        }
-        
-        .btn svg {
-            margin-right: 8px;
-        }
-        
-        .btn-secondary {
-            background-color: var(--card-color);
-            color: var(--text-color);
-        }
-        
-        .card {
-            background-color: var(--card-color);
-            border-radius: var(--border-radius);
-            padding: var(--padding);
-            margin-bottom: 16px;
-            transition: var(--transition);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
-        
-        .card-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-        }
-        
-        .card-title svg {
-            margin-right: 8px;
-        }
-        
-        .input-group {
-            margin-bottom: 20px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--secondary-text);
+        .error {
+            color: red;
             font-size: 14px;
-            font-weight: 500;
         }
-        
-        input, textarea, select {
-            width: 100%;
-            padding: 14px;
-            border-radius: var(--border-radius);
-            border: 1px solid #3a3a40;
-            background-color: #2e2e33;
-            color: var(--text-color);
-            font-size: 16px;
-            transition: var(--transition);
-        }
-        
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(0, 136, 204, 0.2);
-        }
-        
-        textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
-        
-        .deal-card {
-            border-left: 4px solid var(--primary-color);
-            cursor: pointer;
-        }
-        
-        .deal-info {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
-        
-        .deal-label {
-            color: var(--secondary-text);
-            font-size: 13px;
-        }
-        
-        .deal-value {
-            font-weight: 600;
-        }
-        
-        .status {
-            display: inline-block;
-            padding: 6px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-top: 8px;
-        }
-        
-        .status-created {
-            background-color: rgba(0, 136, 204, 0.2);
-            color: var(--primary-color);
-        }
-        
-        .status-wait_payment {
-            background-color: rgba(255, 165, 0, 0.2);
-            color: orange;
-        }
-        
-        .status-wait_shipping {
-            background-color: rgba(255, 165, 0, 0.2);
-            color: orange;
-        }
-        
-        .status-wait_confirmation {
-            background-color: rgba(255, 165, 0, 0.2);
-            color: orange;
-        }
-        
-        .status-completed {
-            background-color: rgba(0, 200, 83, 0.2);
-            color: #00c853;
-        }
-        
-        .tabs {
-            display: flex;
-            margin-bottom: 16px;
-            border-bottom: 1px solid #3a3a40;
-        }
-        
-        .tab {
-            padding: 12px 16px;
-            cursor: pointer;
-            position: relative;
-            font-weight: 600;
-            transition: var(--transition);
-        }
-        
-        .tab:hover {
-            color: var(--primary-color);
-        }
-        
-        .tab.active {
-            color: var(--primary-color);
-        }
-        
-        .tab.active:after {
-            content: '';
-            position: absolute;
-            bottom: -1px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background-color: var(--primary-color);
-            animation: tabUnderline 0.3s ease-out;
-        }
-        
-        @keyframes tabUnderline {
-            from { transform: scaleX(0); }
-            to { transform: scaleX(1); }
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 60px 0;
-            color: var(--secondary-text);
-            animation: fadeIn 0.8s ease-out;
-        }
-        
-        .empty-state svg {
-            margin-bottom: 16px;
-            opacity: 0.6;
-        }
-        
-        .empty-state p {
-            margin-top: 12px;
-            font-size: 15px;
-        }
-        
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        
-        .currency-icon {
-            width: 20px;
-            height: 20px;
-            margin-right: 8px;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-        }
-        
-        .ton-icon {
-            background-color: var(--ton-color);
-            color: white;
-        }
-        
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-            margin-right: 8px;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        @media (min-width: 768px) {
-            body {
-                padding: 24px;
-            }
-            
-            .container {
-                padding: 0 12px;
-            }
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="logo">
-                <div class="logo-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="none"/>
-                        <path d="M12 16V8M8 12H16" stroke="none"/>
-                    </svg>
-                </div>
-                TonTransfer
-            </div>
-            <div id="user-balance" class="user-balance">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="currentColor"/>
-                </svg>
-                <span id="balance-amount">0 TON</span>
-            </div>
+    <div class="container" id="pinForm">
+        <h2 id="title">Введите ваш пин-код</h2>
+        <div id="createPinFields" class="hidden">
+            <input type="password" id="newPin" placeholder="Новый пин-код (4 цифры)" maxlength="4" inputmode="numeric">
+            <input type="password" id="confirmPin" placeholder="Подтвердите пин-код" maxlength="4" inputmode="numeric">
         </div>
-        
-        <div class="tabs">
-            <div class="tab active" id="tab-deals">Мои сделки</div>
-            <div class="tab" id="tab-create">Создать сделку</div>
+        <div id="verifyPinField">
+            <input type="password" id="pinCode" placeholder="Пин-код (4 цифры)" maxlength="4" inputmode="numeric">
         </div>
-        
-        <div id="deals-content">
-            <div id="deals-list">
-                <div class="empty-state">
-                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M20 12C20 16.4183 16.4183 20 12 20C7.58172 20 4 16.4183 4 12C4 7.58172 7.58172 4 12 4C16.4183 4 20 7.58172 20 12Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M12 16V12M12 8H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    <p>У вас пока нет сделок</p>
-                    <button id="create-first-deal" class="btn" style="margin-top: 24px; max-width: 200px;">
-                        Создать сделку
-                    </button>
-                </div>
-            </div>
-        </div>
-        
-        <div id="create-content" style="display: none;">
-            <div class="card pulse">
-                <div class="card-title">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                    Новая сделка
-                </div>
-                
-                <div class="input-group">
-                    <label for="deal-amount">Сумма сделки</label>
-                    <input type="number" id="deal-amount" placeholder="Например: 100" min="0" step="0.01" required>
-                </div>
-                
-                <div class="input-group">
-                    <label for="deal-currency">Валюта</label>
-                    <select id="deal-currency" required>
-                        <option value="RUB">₽ Рубли (RUB)</option>
-                        <option value="USD">$ Доллары (USD)</option>
-                        <option value="UAH">₴ Гривны (UAH)</option>
-                        <option value="KZT">₸ Тенге (KZT)</option>
-                        <option value="BR">BR Бел. Рубли (BR)</option>
-                        <option value="STAR">⭐️ Звёзды (Telegram Stars)</option>
-                        <option value="USDT">💎 USDT (ERC20)</option>
-                        <option value="TON">💎 Toncoin (TON)</option>
-                        <option value="BTC">💎 Bitcoin (BTC)</option>
-                    </select>
-                </div>
-                
-                <div class="input-group">
-                    <label for="deal-description">Описание товара</label>
-                    <textarea id="deal-description" placeholder="Подробно опишите товар или услугу\nНапример: Signet Ring\nИли ссылка на товар: https://t.me/nft/SignetRing-1" required></textarea>
-                </div>
-                
-                <button class="btn" id="create-deal-btn">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M20 12C20 16.4183 16.4183 20 12 20C7.58172 20 4 16.4183 4 12C4 7.58172 7.58172 4 12 4C16.4183 4 20 7.58172 20 12Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M12 16V12M12 8H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    Создать сделку
-                </button>
-            </div>
-        </div>
+        <p id="error" class="error"></p>
+        <button id="submitBtn" disabled>Подтвердить</button>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Проверяем, что WebApp инициализирован
-            if (!window.Telegram || !window.Telegram.WebApp) {
-                console.error('Telegram WebApp SDK not found!');
-                alert('Это приложение должно быть запущено через Telegram');
-                return;
-            }
-
-            const tg = window.Telegram.WebApp;
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const dealId = urlParams.get('deal_id');
+        const userId = urlParams.get('user_id');
+        
+        // Проверяем, есть ли у пользователя пин-код
+        let hasPin = false;
+        
+        // В реальном приложении здесь должен быть запрос к вашему API
+        // Для примера используем localStorage
+        function checkPinExists() {
+            return localStorage.getItem(`pin_${userId}`) !== null;
+        }
+        
+        function init() {
+            hasPin = checkPinExists();
             
-            // Инициализация WebApp
-            tg.expand();
-            tg.enableClosingConfirmation();
-            tg.setHeaderColor('#1a1a1f');
-            tg.setBackgroundColor('#0f0f12');
-
-            // Получаем данные пользователя
-            const user = tg.initDataUnsafe?.user || {};
-            const userId = user.id || 0;
-            const username = user.username || 'unknown';
-
-            // Обновляем баланс
-            document.getElementById('balance-amount').textContent = '0 TON';
-
-            // Элементы интерфейса
-            const tabDeals = document.getElementById('tab-deals');
-            const tabCreate = document.getElementById('tab-create');
-            const dealsContent = document.getElementById('deals-content');
-            const createContent = document.getElementById('create-content');
-            const createDealBtn = document.getElementById('create-deal-btn');
-            const createFirstDealBtn = document.getElementById('create-first-deal');
-
-            // Функция переключения вкладок
-            function switchToTab(tab) {
-                if (tab === 'deals') {
-                    tabDeals.classList.add('active');
-                    tabCreate.classList.remove('active');
-                    dealsContent.style.display = 'block';
-                    createContent.style.display = 'none';
-                    loadDeals();
+            const pinForm = document.getElementById('pinForm');
+            const title = document.getElementById('title');
+            const createPinFields = document.getElementById('createPinFields');
+            const verifyPinField = document.getElementById('verifyPinField');
+            const error = document.getElementById('error');
+            const submitBtn = document.getElementById('submitBtn');
+            const newPinInput = document.getElementById('newPin');
+            const confirmPinInput = document.getElementById('confirmPin');
+            const pinCodeInput = document.getElementById('pinCode');
+            
+            if (hasPin) {
+                title.textContent = 'Введите ваш пин-код';
+                createPinFields.classList.add('hidden');
+                verifyPinField.classList.remove('hidden');
+            } else {
+                title.textContent = 'Создайте пин-код';
+                createPinFields.classList.remove('hidden');
+                verifyPinField.classList.add('hidden');
+            }
+            
+            function validateInputs() {
+                if (hasPin) {
+                    submitBtn.disabled = pinCodeInput.value.length !== 4;
                 } else {
-                    tabCreate.classList.add('active');
-                    tabDeals.classList.remove('active');
-                    dealsContent.style.display = 'none';
-                    createContent.style.display = 'block';
+                    submitBtn.disabled = newPinInput.value.length !== 4 || 
+                                        confirmPinInput.value.length !== 4 ||
+                                        newPinInput.value !== confirmPinInput.value;
                 }
             }
-
-            // Обработчики переключения вкладок
-            tabDeals.addEventListener('click', () => switchToTab('deals'));
-            tabCreate.addEventListener('click', () => switchToTab('create'));
-            createFirstDealBtn.addEventListener('click', () => switchToTab('create'));
-
-            // Загрузка списка сделок (заглушка)
-            function loadDeals() {
-                const dealsList = document.getElementById('deals-list');
-                dealsList.innerHTML = `
-                    <div style="padding: 20px; text-align: center;">
-                        <div class="loading"></div>
-                        <p>Загрузка сделок...</p>
-                    </div>
-                `;
-                
-                setTimeout(() => {
-                    showEmptyState();
-                }, 1000);
-            }
-
-            // Показать пустое состояние
-            function showEmptyState() {
-                document.getElementById('deals-list').innerHTML = `
-                    <div class="empty-state">
-                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M20 12C20 16.4183 16.4183 20 12 20C7.58172 20 4 16.4183 4 12C4 7.58172 7.58172 4 12 4C16.4183 4 20 7.58172 20 12Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M12 16V12M12 8H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        <p>У вас пока нет сделок</p>
-                        <button id="create-first-deal" class="btn" style="margin-top: 24px; max-width: 200px;">
-                            Создать сделку
-                        </button>
-                    </div>
-                `;
-                document.getElementById('create-first-deal')
-                    .addEventListener('click', () => switchToTab('create'));
-            }
-
-            // Обработчик создания сделки
-            createDealBtn.addEventListener('click', function() {
-                const amount = parseFloat(document.getElementById('deal-amount').value);
-                const currency = document.getElementById('deal-currency').value;
-                const description = document.getElementById('deal-description').value.trim();
-
-                // Валидация данных
-                if (isNaN(amount) {
-                    tg.showAlert('Пожалуйста, введите корректную сумму');
-                    return;
-                }
-                
-                if (amount <= 0) {
-                    tg.showAlert('Сумма должна быть больше нуля');
-                    return;
-                }
-                
-                if (!description) {
-                    tg.showAlert('Пожалуйста, введите описание товара');
-                    return;
-                }
-
-                // Блокируем кнопку
-                createDealBtn.disabled = true;
-                createDealBtn.innerHTML = `
-                    <div class="loading"></div>
-                    Создание сделки...
-                `;
-
-                // Формируем данные для отправки
-                const dealData = {
-                    action: 'create_deal',
-                    user_id: userId,
-                    username: username,
-                    amount: amount,
-                    currency: currency,
-                    description: description,
-                    timestamp: Math.floor(Date.now() / 1000)
-                };
-
-                // Отправляем данные в бота
-                try {
-                    tg.sendData(JSON.stringify(dealData));
+            
+            newPinInput?.addEventListener('input', validateInputs);
+            confirmPinInput?.addEventListener('input', validateInputs);
+            pinCodeInput?.addEventListener('input', validateInputs);
+            
+            submitBtn.addEventListener('click', () => {
+                if (hasPin) {
+                    // Проверка пин-кода
+                    const pinCode = pinCodeInput.value;
                     
-                    // Закрываем веб-приложение через 1 секунду
-                    setTimeout(() => {
-                        if (!tg.isClosing) {
-                            tg.close();
-                        }
-                    }, 1000);
-                } catch (error) {
-                    console.error('Ошибка при создании сделки:', error);
-                    tg.showAlert('Ошибка при создании сделки. Попробуйте ещё раз.');
+                    if (pinCode.length !== 4 || !/^\d+$/.test(pinCode)) {
+                        error.textContent = 'Пин-код должен состоять из 4 цифр';
+                        return;
+                    }
                     
-                    // Восстанавливаем кнопку
-                    createDealBtn.disabled = false;
-                    createDealBtn.innerHTML = 'Создать сделку';
+                    // В реальном приложении здесь должна быть проверка через API
+                    const correctPin = localStorage.getItem(`pin_${userId}`);
+                    
+                    if (pinCode === correctPin) {
+                        tg.sendData(JSON.stringify({
+                            action: 'verify_pin',
+                            deal_id: dealId,
+                            pin_code: pinCode,
+                            user_id: userId
+                        }));
+                    } else {
+                        error.textContent = 'Неверный пин-код';
+                    }
+                } else {
+                    // Создание пин-кода
+                    const newPin = newPinInput.value;
+                    const confirmPin = confirmPinInput.value;
+                    
+                    if (newPin.length !== 4 || !/^\d+$/.test(newPin)) {
+                        error.textContent = 'Пин-код должен состоять из 4 цифр';
+                        return;
+                    }
+                    
+                    if (newPin !== confirmPin) {
+                        error.textContent = 'Пин-коды не совпадают';
+                        return;
+                    }
+                    
+                    // В реальном приложении здесь должно быть сохранение через API
+                    localStorage.setItem(`pin_${userId}`, newPin);
+                    
+                    tg.sendData(JSON.stringify({
+                        action: 'create_pin',
+                        deal_id: dealId,
+                        pin_code: newPin,
+                        confirm_pin: confirmPin,
+                        user_id: userId
+                    }));
                 }
             });
-
-            // Первоначальная загрузка
-            switchToTab('deals');
-        });
+        }
+        
+        init();
     </script>
 </body>
 </html>
