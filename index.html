@@ -367,7 +367,7 @@
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="currentColor"/>
                 </svg>
-                <span id="balance-amount">0</span>
+                <span id="balance-amount">0 TON</span>
             </div>
         </div>
         
@@ -378,7 +378,6 @@
         
         <div id="deals-content">
             <div id="deals-list">
-                <!-- Сделки будут загружаться здесь -->
                 <div class="empty-state">
                     <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M20 12C20 16.4183 16.4183 20 12 20C7.58172 20 4 16.4183 4 12C4 7.58172 7.58172 4 12 4C16.4183 4 20 7.58172 20 12Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -403,12 +402,12 @@
                 
                 <div class="input-group">
                     <label for="deal-amount">Сумма сделки</label>
-                    <input type="number" id="deal-amount" placeholder="Например: 100" min="0" step="0.01">
+                    <input type="number" id="deal-amount" placeholder="Например: 100" min="0" step="0.01" required>
                 </div>
                 
                 <div class="input-group">
                     <label for="deal-currency">Валюта</label>
-                    <select id="deal-currency">
+                    <select id="deal-currency" required>
                         <option value="RUB">₽ Рубли (RUB)</option>
                         <option value="USD">$ Доллары (USD)</option>
                         <option value="UAH">₴ Гривны (UAH)</option>
@@ -423,7 +422,7 @@
                 
                 <div class="input-group">
                     <label for="deal-description">Описание товара</label>
-                    <textarea id="deal-description" placeholder="Подробно опишите товар или услугу\nНапример: Signet Ring\nИли ссылка на товар: https://t.me/nft/SignetRing-1"></textarea>
+                    <textarea id="deal-description" placeholder="Подробно опишите товар или услугу\nНапример: Signet Ring\nИли ссылка на товар: https://t.me/nft/SignetRing-1" required></textarea>
                 </div>
                 
                 <button class="btn" id="create-deal-btn">
@@ -439,132 +438,135 @@
 
     <script>
         // Инициализация Telegram Mini App
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-        tg.enableClosingConfirmation();
-        tg.setHeaderColor('#1a1a1f');
-        tg.setBackgroundColor('#0f0f12');
-        
-        // Получаем данные пользователя
-        const user = tg.initDataUnsafe.user;
-        const userId = user?.id;
-        const username = user?.username;
-        
-        // Элементы интерфейса
-        const tabDeals = document.getElementById('tab-deals');
-        const tabCreate = document.getElementById('tab-create');
-        const dealsContent = document.getElementById('deals-content');
-        const createContent = document.getElementById('create-content');
-        const dealsList = document.getElementById('deals-list');
-        const createDealBtn = document.getElementById('create-deal-btn');
-        const createFirstDealBtn = document.getElementById('create-first-deal');
-        
-        // Переключение между вкладками
-        function switchToTab(tab) {
-            if (tab === 'deals') {
-                tabDeals.classList.add('active');
-                tabCreate.classList.remove('active');
-                dealsContent.style.display = 'block';
-                createContent.style.display = 'none';
+        document.addEventListener('DOMContentLoaded', function() {
+            // Проверяем, что WebApp инициализирован
+            if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
+                const tg = Telegram.WebApp;
+                
+                // Настройка WebApp
+                tg.expand();
+                tg.enableClosingConfirmation();
+                tg.setHeaderColor('#1a1a1f');
+                tg.setBackgroundColor('#0f0f12');
+                
+                // Получаем данные пользователя
+                const user = tg.initDataUnsafe?.user || {};
+                const userId = user.id || 0;
+                const username = user.username || 'unknown';
+                
+                // Устанавливаем баланс
+                document.getElementById('balance-amount').textContent = '0 TON';
+                
+                // Элементы интерфейса
+                const tabDeals = document.getElementById('tab-deals');
+                const tabCreate = document.getElementById('tab-create');
+                const dealsContent = document.getElementById('deals-content');
+                const createContent = document.getElementById('create-content');
+                const createDealBtn = document.getElementById('create-deal-btn');
+                const createFirstDealBtn = document.getElementById('create-first-deal');
+                
+                // Переключение между вкладками
+                function switchToTab(tab) {
+                    if (tab === 'deals') {
+                        tabDeals.classList.add('active');
+                        tabCreate.classList.remove('active');
+                        dealsContent.style.display = 'block';
+                        createContent.style.display = 'none';
+                        loadDeals();
+                    } else {
+                        tabCreate.classList.add('active');
+                        tabDeals.classList.remove('active');
+                        dealsContent.style.display = 'none';
+                        createContent.style.display = 'block';
+                    }
+                }
+                
+                // Назначаем обработчики событий
+                tabDeals.addEventListener('click', () => switchToTab('deals'));
+                tabCreate.addEventListener('click', () => switchToTab('create'));
+                createFirstDealBtn.addEventListener('click', () => switchToTab('create'));
+                
+                // Загрузка списка сделок
+                function loadDeals() {
+                    // Здесь будет загрузка сделок с сервера
+                    // Пока просто показываем пустое состояние
+                    showEmptyState();
+                }
+                
+                function showEmptyState() {
+                    document.getElementById('deals-list').innerHTML = `
+                        <div class="empty-state">
+                            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M20 12C20 16.4183 16.4183 20 12 20C7.58172 20 4 16.4183 4 12C4 7.58172 7.58172 4 12 4C16.4183 4 20 7.58172 20 12Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M12 16V12M12 8H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <p>У вас пока нет сделок</p>
+                            <button id="create-first-deal" class="btn" style="margin-top: 24px; max-width: 200px;">
+                                Создать сделку
+                            </button>
+                        </div>
+                    `;
+                    document.getElementById('create-first-deal').addEventListener('click', () => switchToTab('create'));
+                }
+                
+                // Обработчик создания сделки
+                createDealBtn.addEventListener('click', function() {
+                    const amount = parseFloat(document.getElementById('deal-amount').value);
+                    const currency = document.getElementById('deal-currency').value;
+                    const description = document.getElementById('deal-description').value.trim();
+                    
+                    // Валидация
+                    if (isNaN(amount) {
+                        tg.showAlert('Пожалуйста, введите корректную сумму');
+                        return;
+                    }
+                    
+                    if (amount <= 0) {
+                        tg.showAlert('Сумма должна быть больше нуля');
+                        return;
+                    }
+                    
+                    if (!description) {
+                        tg.showAlert('Пожалуйста, введите описание товара');
+                        return;
+                    }
+                    
+                    // Блокируем кнопку
+                    createDealBtn.disabled = true;
+                    createDealBtn.innerHTML = `
+                        <div class="loading"></div>
+                        Создание сделки...
+                    `;
+                    
+                    // Формируем данные сделки
+                    const dealData = {
+                        user_id: userId,
+                        username: username,
+                        amount: amount,
+                        currency: currency,
+                        description: description,
+                        timestamp: Math.floor(Date.now() / 1000)
+                    };
+                    
+                    // Отправляем данные в бота
+                    tg.sendData(JSON.stringify({
+                        action: 'create_deal',
+                        data: dealData
+                    }));
+                    
+                    // Показываем уведомление и закрываем приложение через 1.5 секунды
+                    setTimeout(() => {
+                        tg.showAlert('Сделка успешно создана!', () => {
+                            tg.close();
+                        });
+                    }, 1500);
+                });
+                
+                // Инициализация при загрузке
                 loadDeals();
             } else {
-                tabCreate.classList.add('active');
-                tabDeals.classList.remove('active');
-                dealsContent.style.display = 'none';
-                createContent.style.display = 'block';
-            }
-        }
-        
-        tabDeals.addEventListener('click', () => switchToTab('deals'));
-        tabCreate.addEventListener('click', () => switchToTab('create'));
-        createFirstDealBtn.addEventListener('click', () => switchToTab('create'));
-        
-        // Загрузка списка сделок
-        function loadDeals() {
-            dealsList.innerHTML = `
-                <div style="padding: 20px; text-align: center;">
-                    <div class="loading"></div>
-                    <p>Загрузка сделок...</p>
-                </div>
-            `;
-            
-            // Здесь можно добавить запрос к API бота для получения сделок
-            setTimeout(() => {
-                dealsList.innerHTML = `
-                    <div class="empty-state">
-                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M20 12C20 16.4183 16.4183 20 12 20C7.58172 20 4 16.4183 4 12C4 7.58172 7.58172 4 12 4C16.4183 4 20 7.58172 20 12Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M12 16V12M12 8H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        <p>У вас пока нет сделок</p>
-                        <button id="create-first-deal" class="btn" style="margin-top: 24px; max-width: 200px;">
-                            Создать сделку
-                        </button>
-                    </div>
-                `;
-                
-                document.getElementById('create-first-deal').addEventListener('click', () => switchToTab('create'));
-            }, 1000);
-        }
-        
-        // Создание новой сделки
-// Создание новой сделки
-createDealBtn.addEventListener('click', () => {
-    const amount = parseFloat(document.getElementById('deal-amount').value);
-    const currency = document.getElementById('deal-currency').value;
-    const description = document.getElementById('deal-description').value.trim();
-    
-    // Валидация данных
-    if (isNaN(amount) || amount <= 0) {
-        tg.showAlert('Пожалуйста, введите корректную сумму');
-        return;
-    }
-    
-    if (!description) {
-        tg.showAlert('Пожалуйста, введите описание товара');
-        return;
-    }
-    
-    // Блокируем кнопку
-    createDealBtn.innerHTML = `
-        <div class="loading"></div>
-        Создание сделки...
-    `;
-    createDealBtn.disabled = true;
-    
-    // Формируем данные для отправки
-    const dealData = {
-        user_id: userId,
-        username: username || 'неизвестно',
-        amount: amount,
-        currency: currency,
-        description: description,
-        timestamp: Math.floor(Date.now() / 1000)
-    };
-    
-    // Отправляем данные в бота
-    try {
-        tg.sendData(JSON.stringify({
-            action: 'create_deal',
-            data: dealData
-        }));
-        
-        // Показываем уведомление об успехе
-        tg.showAlert('Сделка создана!', () => {
-            tg.close();
-        });
-    } catch (error) {
-        console.error('Ошибка при отправке данных:', error);
-        tg.showAlert('Ошибка при создании сделки. Попробуйте ещё раз.');
-        createDealBtn.innerHTML = 'Создать сделку';
-        createDealBtn.disabled = false;
-    }
-});
-        
-        // Инициализация при загрузке
-        document.addEventListener('DOMContentLoaded', () => {
-            if (user) {
-                document.getElementById('balance-amount').textContent = '0 TON';
+                console.error('Telegram WebApp не обнаружен!');
+                alert('Это приложение должно быть запущено через Telegram');
             }
         });
     </script>
