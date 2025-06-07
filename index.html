@@ -508,43 +508,43 @@
         }
         
         // Создание новой сделки
-        createDealBtn.addEventListener('click', () => {
-            const amount = document.getElementById('deal-amount').value;
-            const currency = document.getElementById('deal-currency').value;
-            const description = document.getElementById('deal-description').value;
-            
-            if (!amount || isNaN(amount) {
-                alert('Пожалуйста, введите корректную сумму');
-                return;
-            }
-            
-            if (!description) {
-                alert('Пожалуйста, введите описание товара');
-                return;
-            }
-            
-            createDealBtn.innerHTML = `
-                <div class="loading"></div>
-                Создание сделки...
-            `;
-            createDealBtn.disabled = true;
-            
-            // Отправляем данные в бота
-            const data = {
-                action: 'create_deal',
-                amount: parseFloat(amount),
-                currency: currency,
-                description: description
-            };
-            
-            // Отправка данных в Telegram бота
-            tg.sendData(JSON.stringify(data));
-            
-            // Закрываем веб-приложение через 2 секунды
-            setTimeout(() => {
-                tg.close();
-            }, 2000);
-        });
+createDealBtn.addEventListener('click', () => {
+    const amount = document.getElementById('deal-amount').value;
+    const currency = document.getElementById('deal-currency').value;
+    const description = document.getElementById('deal-description').value;
+    
+if (!amount || isNaN(amount)) {
+        alert('Пожалуйста, введите корректную сумму');
+        return;
+    }
+    
+    if (!description) {
+        alert('Пожалуйста, введите описание товара');
+        return;
+    }
+    
+    createDealBtn.innerHTML = `
+        <div class="loading"></div>
+        Создание сделки...
+    `;
+    createDealBtn.disabled = true;
+    
+    // Отправляем данные в бота
+    const data = {
+        action: 'create_deal',
+        amount: parseFloat(amount),
+        currency: currency,
+        description: description
+    };
+    
+    // Отправка данных в Telegram бота
+    tg.sendData(JSON.stringify(data));
+    
+    // Закрываем веб-приложение через 2 секунды
+    setTimeout(() => {
+        tg.close();
+    }, 2000);
+});
         
         // Инициализация при загрузке
         document.addEventListener('DOMContentLoaded', () => {
