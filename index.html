@@ -508,42 +508,57 @@
         }
         
         // Создание новой сделки
+// Создание новой сделки
 createDealBtn.addEventListener('click', () => {
-    const amount = document.getElementById('deal-amount').value;
+    const amount = parseFloat(document.getElementById('deal-amount').value);
     const currency = document.getElementById('deal-currency').value;
-    const description = document.getElementById('deal-description').value;
+    const description = document.getElementById('deal-description').value.trim();
     
-if (!amount || isNaN(amount)) {
-        alert('Пожалуйста, введите корректную сумму');
+    // Валидация данных
+    if (isNaN(amount) || amount <= 0) {
+        tg.showAlert('Пожалуйста, введите корректную сумму');
         return;
     }
     
     if (!description) {
-        alert('Пожалуйста, введите описание товара');
+        tg.showAlert('Пожалуйста, введите описание товара');
         return;
     }
     
+    // Блокируем кнопку
     createDealBtn.innerHTML = `
         <div class="loading"></div>
         Создание сделки...
     `;
     createDealBtn.disabled = true;
     
-    // Отправляем данные в бота
-    const data = {
-        action: 'create_deal',
-        amount: parseFloat(amount),
+    // Формируем данные для отправки
+    const dealData = {
+        user_id: userId,
+        username: username || 'неизвестно',
+        amount: amount,
         currency: currency,
-        description: description
+        description: description,
+        timestamp: Math.floor(Date.now() / 1000)
     };
     
-    // Отправка данных в Telegram бота
-    tg.sendData(JSON.stringify(data));
-    
-    // Закрываем веб-приложение через 2 секунды
-    setTimeout(() => {
-        tg.close();
-    }, 2000);
+    // Отправляем данные в бота
+    try {
+        tg.sendData(JSON.stringify({
+            action: 'create_deal',
+            data: dealData
+        }));
+        
+        // Показываем уведомление об успехе
+        tg.showAlert('Сделка создана!', () => {
+            tg.close();
+        });
+    } catch (error) {
+        console.error('Ошибка при отправке данных:', error);
+        tg.showAlert('Ошибка при создании сделки. Попробуйте ещё раз.');
+        createDealBtn.innerHTML = 'Создать сделку';
+        createDealBtn.disabled = false;
+    }
 });
         
         // Инициализация при загрузке
