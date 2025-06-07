@@ -3,23 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Deal</title>
+    <title>TonTransfer - Secure Deals</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #1a1a1e;
-            --card-color: #242429;
+            --bg-color: #0f0f12;
+            --card-color: #1a1a1f;
             --primary-color: #0088cc;
+            --ton-color: #0088cc;
             --text-color: #ffffff;
             --secondary-text: #a1a1a8;
-            --border-radius: 12px;
+            --border-radius: 16px;
             --padding: 16px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
         
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
         }
         
         body {
@@ -27,12 +30,18 @@
             color: var(--text-color);
             min-height: 100vh;
             padding: var(--padding);
-            line-height: 1.5;
+            line-height: 1.6;
         }
         
         .container {
             max-width: 600px;
             margin: 0 auto;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .header {
@@ -40,11 +49,49 @@
             align-items: center;
             justify-content: space-between;
             margin-bottom: 24px;
+            padding: 12px 0;
         }
         
         .logo {
-            font-size: 20px;
+            display: flex;
+            align-items: center;
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--ton-color), #29a7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .logo-icon {
+            width: 28px;
+            height: 28px;
+            margin-right: 10px;
+            background-color: var(--ton-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo-icon svg {
+            width: 16px;
+            height: 16px;
+            fill: white;
+        }
+        
+        .user-balance {
+            background-color: rgba(0, 136, 204, 0.1);
+            padding: 8px 12px;
+            border-radius: var(--border-radius);
+            font-size: 14px;
             font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-balance svg {
+            margin-right: 6px;
         }
         
         .btn {
@@ -52,27 +99,35 @@
             color: white;
             border: none;
             border-radius: var(--border-radius);
-            padding: 12px 16px;
+            padding: 14px 16px;
             font-size: 16px;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
             width: 100%;
-            transition: opacity 0.2s;
+            transition: var(--transition);
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         
         .btn:hover {
-            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 136, 204, 0.2);
         }
         
         .btn:active {
-            opacity: 0.8;
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 136, 204, 0.2);
         }
         
         .btn svg {
             margin-right: 8px;
+        }
+        
+        .btn-secondary {
+            background-color: var(--card-color);
+            color: var(--text-color);
         }
         
         .card {
@@ -80,16 +135,29 @@
             border-radius: var(--border-radius);
             padding: var(--padding);
             margin-bottom: 16px;
+            transition: var(--transition);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
         
         .card-title {
             font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 12px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-title svg {
+            margin-right: 8px;
         }
         
         .input-group {
-            margin-bottom: 16px;
+            margin-bottom: 20px;
         }
         
         label {
@@ -97,25 +165,34 @@
             margin-bottom: 8px;
             color: var(--secondary-text);
             font-size: 14px;
+            font-weight: 500;
         }
         
         input, textarea, select {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             border-radius: var(--border-radius);
             border: 1px solid #3a3a40;
             background-color: #2e2e33;
             color: var(--text-color);
             font-size: 16px;
+            transition: var(--transition);
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(0, 136, 204, 0.2);
         }
         
         textarea {
-            min-height: 100px;
+            min-height: 120px;
             resize: vertical;
         }
         
         .deal-card {
             border-left: 4px solid var(--primary-color);
+            cursor: pointer;
         }
         
         .deal-info {
@@ -126,18 +203,19 @@
         
         .deal-label {
             color: var(--secondary-text);
+            font-size: 13px;
         }
         
         .deal-value {
-            font-weight: 500;
+            font-weight: 600;
         }
         
         .status {
             display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
+            padding: 6px 10px;
+            border-radius: 20px;
             font-size: 12px;
-            font-weight: 500;
+            font-weight: 600;
             margin-top: 8px;
         }
         
@@ -173,9 +251,15 @@
         }
         
         .tab {
-            padding: 8px 16px;
+            padding: 12px 16px;
             cursor: pointer;
             position: relative;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        
+        .tab:hover {
+            color: var(--primary-color);
         }
         
         .tab.active {
@@ -190,21 +274,79 @@
             right: 0;
             height: 2px;
             background-color: var(--primary-color);
+            animation: tabUnderline 0.3s ease-out;
+        }
+        
+        @keyframes tabUnderline {
+            from { transform: scaleX(0); }
+            to { transform: scaleX(1); }
         }
         
         .empty-state {
             text-align: center;
-            padding: 40px 0;
+            padding: 60px 0;
             color: var(--secondary-text);
+            animation: fadeIn 0.8s ease-out;
         }
         
         .empty-state svg {
             margin-bottom: 16px;
+            opacity: 0.6;
+        }
+        
+        .empty-state p {
+            margin-top: 12px;
+            font-size: 15px;
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .currency-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        .ton-icon {
+            background-color: var(--ton-color);
+            color: white;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
         
         @media (min-width: 768px) {
             body {
                 padding: 24px;
+            }
+            
+            .container {
+                padding: 0 12px;
             }
         }
     </style>
@@ -212,8 +354,21 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="logo">Secure Deal</div>
-            <div id="user-balance">⭐️ 0</div>
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="none"/>
+                        <path d="M12 16V8M8 12H16" stroke="none"/>
+                    </svg>
+                </div>
+                TonTransfer
+            </div>
+            <div id="user-balance" class="user-balance">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="currentColor"/>
+                </svg>
+                <span id="balance-amount">0</span>
+            </div>
         </div>
         
         <div class="tabs">
@@ -225,23 +380,30 @@
             <div id="deals-list">
                 <!-- Сделки будут загружаться здесь -->
                 <div class="empty-state">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#a1a1a8" stroke-width="2"/>
-                        <path d="M12 8V12" stroke="#a1a1a8" stroke-width="2" stroke-linecap="round"/>
-                        <path d="M12 16H12.01" stroke="#a1a1a8" stroke-width="2" stroke-linecap="round"/>
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20 12C20 16.4183 16.4183 20 12 20C7.58172 20 4 16.4183 4 12C4 7.58172 7.58172 4 12 4C16.4183 4 20 7.58172 20 12Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 16V12M12 8H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                     <p>У вас пока нет сделок</p>
+                    <button id="create-first-deal" class="btn" style="margin-top: 24px; max-width: 200px;">
+                        Создать сделку
+                    </button>
                 </div>
             </div>
         </div>
         
         <div id="create-content" style="display: none;">
-            <div class="card">
-                <div class="card-title">Новая сделка</div>
+            <div class="card pulse">
+                <div class="card-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    Новая сделка
+                </div>
                 
                 <div class="input-group">
-                    <label for="deal-amount">Сумма</label>
-                    <input type="number" id="deal-amount" placeholder="100">
+                    <label for="deal-amount">Сумма сделки</label>
+                    <input type="number" id="deal-amount" placeholder="Например: 100" min="0" step="0.01">
                 </div>
                 
                 <div class="input-group">
@@ -261,13 +423,13 @@
                 
                 <div class="input-group">
                     <label for="deal-description">Описание товара</label>
-                    <textarea id="deal-description" placeholder="Например: Signet Ring или ссылка на товар"></textarea>
+                    <textarea id="deal-description" placeholder="Подробно опишите товар или услугу\nНапример: Signet Ring\nИли ссылка на товар: https://t.me/nft/SignetRing-1"></textarea>
                 </div>
                 
                 <button class="btn" id="create-deal-btn">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 5V19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        <path d="M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M20 12C20 16.4183 16.4183 20 12 20C7.58172 20 4 16.4183 4 12C4 7.58172 7.58172 4 12 4C16.4183 4 20 7.58172 20 12Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 16V12M12 8H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                     Создать сделку
                 </button>
@@ -279,6 +441,9 @@
         // Инициализация Telegram Mini App
         const tg = window.Telegram.WebApp;
         tg.expand();
+        tg.enableClosingConfirmation();
+        tg.setHeaderColor('#1a1a1f');
+        tg.setBackgroundColor('#0f0f12');
         
         // Получаем данные пользователя
         const user = tg.initDataUnsafe.user;
@@ -292,118 +457,54 @@
         const createContent = document.getElementById('create-content');
         const dealsList = document.getElementById('deals-list');
         const createDealBtn = document.getElementById('create-deal-btn');
+        const createFirstDealBtn = document.getElementById('create-first-deal');
         
         // Переключение между вкладками
-        tabDeals.addEventListener('click', () => {
-            tabDeals.classList.add('active');
-            tabCreate.classList.remove('active');
-            dealsContent.style.display = 'block';
-            createContent.style.display = 'none';
-            loadDeals();
-        });
+        function switchToTab(tab) {
+            if (tab === 'deals') {
+                tabDeals.classList.add('active');
+                tabCreate.classList.remove('active');
+                dealsContent.style.display = 'block';
+                createContent.style.display = 'none';
+                loadDeals();
+            } else {
+                tabCreate.classList.add('active');
+                tabDeals.classList.remove('active');
+                dealsContent.style.display = 'none';
+                createContent.style.display = 'block';
+            }
+        }
         
-        tabCreate.addEventListener('click', () => {
-            tabCreate.classList.add('active');
-            tabDeals.classList.remove('active');
-            dealsContent.style.display = 'none';
-            createContent.style.display = 'block';
-        });
+        tabDeals.addEventListener('click', () => switchToTab('deals'));
+        tabCreate.addEventListener('click', () => switchToTab('create'));
+        createFirstDealBtn.addEventListener('click', () => switchToTab('create'));
         
         // Загрузка списка сделок
         function loadDeals() {
-            // Здесь будет запрос к боту для получения списка сделок
-            // В демо-версии используем моковые данные
-            const mockDeals = [
-                {
-                    id: 'abc123',
-                    amount: 100,
-                    currency: 'RUB',
-                    description: 'Signet Ring',
-                    status: 'created',
-                    date: '2023-05-15'
-                },
-                {
-                    id: 'def456',
-                    amount: 50,
-                    currency: 'USD',
-                    description: 'NFT Artwork',
-                    status: 'completed',
-                    date: '2023-05-10'
-                }
-            ];
+            dealsList.innerHTML = `
+                <div style="padding: 20px; text-align: center;">
+                    <div class="loading"></div>
+                    <p>Загрузка сделок...</p>
+                </div>
+            `;
             
-            renderDeals(mockDeals);
-        }
-        
-        // Отображение списка сделок
-        function renderDeals(deals) {
-            if (deals.length === 0) {
+            // Здесь можно добавить запрос к API бота для получения сделок
+            setTimeout(() => {
                 dealsList.innerHTML = `
                     <div class="empty-state">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#a1a1a8" stroke-width="2"/>
-                            <path d="M12 8V12" stroke="#a1a1a8" stroke-width="2" stroke-linecap="round"/>
-                            <path d="M12 16H12.01" stroke="#a1a1a8" stroke-width="2" stroke-linecap="round"/>
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M20 12C20 16.4183 16.4183 20 12 20C7.58172 20 4 16.4183 4 12C4 7.58172 7.58172 4 12 4C16.4183 4 20 7.58172 20 12Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M12 16V12M12 8H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                         <p>У вас пока нет сделок</p>
+                        <button id="create-first-deal" class="btn" style="margin-top: 24px; max-width: 200px;">
+                            Создать сделку
+                        </button>
                     </div>
                 `;
-                return;
-            }
-            
-            dealsList.innerHTML = '';
-            
-            deals.forEach(deal => {
-                const dealCard = document.createElement('div');
-                dealCard.className = 'card deal-card';
                 
-                const statusClass = `status-${deal.status}`;
-                const statusText = getStatusText(deal.status);
-                
-                dealCard.innerHTML = `
-                    <div class="deal-info">
-                        <div>
-                            <div class="deal-label">Сумма</div>
-                            <div class="deal-value">${deal.amount} ${deal.currency}</div>
-                        </div>
-                        <div>
-                            <div class="deal-label">Дата</div>
-                            <div class="deal-value">${deal.date}</div>
-                        </div>
-                    </div>
-                    <div class="deal-info">
-                        <div>
-                            <div class="deal-label">Описание</div>
-                            <div class="deal-value">${deal.description}</div>
-                        </div>
-                    </div>
-                    <div class="status ${statusClass}">${statusText}</div>
-                `;
-                
-                dealCard.addEventListener('click', () => {
-                    // Открываем детали сделки
-                    openDealDetails(deal.id);
-                });
-                
-                dealsList.appendChild(dealCard);
-            });
-        }
-        
-        function getStatusText(status) {
-            const statuses = {
-                'created': 'Ожидает покупателя',
-                'wait_payment': 'Ожидает оплаты',
-                'wait_shipping': 'Ожидает отправки',
-                'wait_confirmation': 'Ожидает подтверждения',
-                'completed': 'Завершена'
-            };
-            return statuses[status] || status;
-        }
-        
-        function openDealDetails(dealId) {
-            // Здесь будет логика открытия деталей сделки
-            // В демо-версии просто показываем alert
-            alert(`Открыты детали сделки #${dealId}`);
+                document.getElementById('create-first-deal').addEventListener('click', () => switchToTab('create'));
+            }, 1000);
         }
         
         // Создание новой сделки
@@ -412,54 +513,45 @@
             const currency = document.getElementById('deal-currency').value;
             const description = document.getElementById('deal-description').value;
             
-            if (!amount || !description) {
-                alert('Пожалуйста, заполните все поля');
+            if (!amount || isNaN(amount) {
+                alert('Пожалуйста, введите корректную сумму');
                 return;
             }
             
-            // Здесь будет отправка данных в бота
-            // В демо-версии просто показываем сообщение
-            alert(`Сделка создана!\nСумма: ${amount} ${currency}\nОписание: ${description}`);
+            if (!description) {
+                alert('Пожалуйста, введите описание товара');
+                return;
+            }
             
-            // Очищаем поля
-            document.getElementById('deal-amount').value = '';
-            document.getElementById('deal-description').value = '';
+            createDealBtn.innerHTML = `
+                <div class="loading"></div>
+                Создание сделки...
+            `;
+            createDealBtn.disabled = true;
             
-            // Переключаемся на вкладку со сделками
-            tabDeals.click();
+            // Отправляем данные в бота
+            const data = {
+                action: 'create_deal',
+                amount: parseFloat(amount),
+                currency: currency,
+                description: description
+            };
+            
+            // Отправка данных в Telegram бота
+            tg.sendData(JSON.stringify(data));
+            
+            // Закрываем веб-приложение через 2 секунды
+            setTimeout(() => {
+                tg.close();
+            }, 2000);
         });
         
         // Инициализация при загрузке
         document.addEventListener('DOMContentLoaded', () => {
-            if (userId) {
-                // Можно использовать userId для запросов к боту
-                loadDeals();
-            } else {
-                // Пользователь не авторизован через Mini App
-                dealsList.innerHTML = `
-                    <div class="empty-state">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#a1a1a8" stroke-width="2"/>
-                            <path d="M12 8V12" stroke="#a1a1a8" stroke-width="2" stroke-linecap="round"/>
-                            <path d="M12 16H12.01" stroke="#a1a1a8" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
-                        <p>Авторизуйтесь через Telegram</p>
-                    </div>
-                `;
+            if (user) {
+                document.getElementById('balance-amount').textContent = '0 TON';
             }
         });
-        
-        // Обработка сообщений от бота
-        window.addEventListener('message', (event) => {
-            if (event.data && event.data.type === 'deals_update') {
-                renderDeals(event.data.deals);
-            }
-        });
-        
-        // Для демонстрации - имитируем загрузку сделок
-        setTimeout(() => {
-            loadDeals();
-        }, 1000);
     </script>
 </body>
 </html>
