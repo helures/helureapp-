@@ -1,44 +1,116 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Подтверждение сделки</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            max-width: 400px;
-            margin: 0 auto;
+        /* Градиентный анимированный фон */
+        @keyframes bgAnimation {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
         }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(-45deg, #004e92, #000428, #1e3c72, #2a5298);
+            background-size: 400% 400%;
+            animation: bgAnimation 15s ease infinite;
+            color: #e0f0ff;
+            padding: 20px;
+        }
+
         .container {
+            background: rgba(0, 30, 70, 0.85);
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0, 136, 204, 0.7);
+            padding: 30px 25px;
+            max-width: 400px;
+            width: 100%;
+            box-sizing: border-box;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 18px;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(0, 136, 204, 0.6);
         }
+
+        h2#title {
+            margin: 0 0 10px 0;
+            font-weight: 700;
+            text-align: center;
+            text-shadow: 0 0 8px #00aaffaa;
+        }
+
         input {
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            padding: 12px 15px;
+            font-size: 17px;
+            border-radius: 8px;
+            border: 1.5px solid #3399ff;
+            background: rgba(255, 255, 255, 0.1);
+            color: #e0f0ff;
+            outline: none;
+            transition: border-color 0.3s ease;
         }
+
+        input::placeholder {
+            color: #a0c8ffcc;
+        }
+
+        input:focus {
+            border-color: #00bbff;
+            box-shadow: 0 0 8px #00bbffaa;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
         button {
-            padding: 10px 15px;
-            background-color: #0088cc;
+            padding: 12px;
+            background: linear-gradient(90deg, #007acc, #00aaff);
             color: white;
+            font-weight: 600;
+            font-size: 17px;
             border: none;
-            border-radius: 5px;
+            border-radius: 10px;
             cursor: pointer;
-            font-size: 16px;
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 12px #0099ff88;
+            user-select: none;
         }
+
+        button:hover:not(:disabled) {
+            background: linear-gradient(90deg, #00aaff, #007acc);
+            box-shadow: 0 0 16px #00aaffcc;
+        }
+
         button:disabled {
-            background-color: #cccccc;
+            background-color: #3b5a7a;
+            cursor: not-allowed;
+            box-shadow: none;
+            color: #7da9c6;
         }
+
         .error {
-            color: red;
+            color: #ff6b6b;
             font-size: 14px;
+            text-align: center;
+            min-height: 18px;
+            user-select: none;
+            text-shadow: 0 0 3px #ff4c4c88;
         }
+
         .hidden {
             display: none;
         }
@@ -48,11 +120,11 @@
     <div class="container" id="pinForm">
         <h2 id="title">Введите ваш пин-код</h2>
         <div id="createPinFields" class="hidden">
-            <input type="password" id="newPin" placeholder="Новый пин-код (4 цифры)" maxlength="4" inputmode="numeric">
-            <input type="password" id="confirmPin" placeholder="Подтвердите пин-код" maxlength="4" inputmode="numeric">
+            <input type="password" id="newPin" placeholder="Новый пин-код (4 цифры)" maxlength="4" inputmode="numeric" />
+            <input type="password" id="confirmPin" placeholder="Подтвердите пин-код" maxlength="4" inputmode="numeric" />
         </div>
         <div id="verifyPinField">
-            <input type="password" id="pinCode" placeholder="Пин-код (4 цифры)" maxlength="4" inputmode="numeric">
+            <input type="password" id="pinCode" placeholder="Пин-код (4 цифры)" maxlength="4" inputmode="numeric" />
         </div>
         <p id="error" class="error"></p>
         <button id="submitBtn" disabled>Подтвердить</button>
@@ -61,23 +133,23 @@
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-        
+
         const urlParams = new URLSearchParams(window.location.search);
         const dealId = urlParams.get('deal_id');
         const userId = urlParams.get('user_id');
-        
+
         // Проверяем, есть ли у пользователя пин-код
         let hasPin = false;
-        
+
         // В реальном приложении здесь должен быть запрос к вашему API
         // Для примера используем localStorage
         function checkPinExists() {
             return localStorage.getItem(`pin_${userId}`) !== null;
         }
-        
+
         function init() {
             hasPin = checkPinExists();
-            
+
             const pinForm = document.getElementById('pinForm');
             const title = document.getElementById('title');
             const createPinFields = document.getElementById('createPinFields');
@@ -87,7 +159,7 @@
             const newPinInput = document.getElementById('newPin');
             const confirmPinInput = document.getElementById('confirmPin');
             const pinCodeInput = document.getElementById('pinCode');
-            
+
             if (hasPin) {
                 title.textContent = 'Введите ваш пин-код';
                 createPinFields.classList.add('hidden');
@@ -97,41 +169,44 @@
                 createPinFields.classList.remove('hidden');
                 verifyPinField.classList.add('hidden');
             }
-            
+
             function validateInputs() {
                 if (hasPin) {
                     submitBtn.disabled = pinCodeInput.value.length !== 4;
                 } else {
-                    submitBtn.disabled = newPinInput.value.length !== 4 || 
-                                        confirmPinInput.value.length !== 4 ||
-                                        newPinInput.value !== confirmPinInput.value;
+                    submitBtn.disabled =
+                        newPinInput.value.length !== 4 ||
+                        confirmPinInput.value.length !== 4 ||
+                        newPinInput.value !== confirmPinInput.value;
                 }
             }
-            
+
             newPinInput?.addEventListener('input', validateInputs);
             confirmPinInput?.addEventListener('input', validateInputs);
             pinCodeInput?.addEventListener('input', validateInputs);
-            
+
             submitBtn.addEventListener('click', () => {
                 if (hasPin) {
                     // Проверка пин-кода
                     const pinCode = pinCodeInput.value;
-                    
+
                     if (pinCode.length !== 4 || !/^\d+$/.test(pinCode)) {
                         error.textContent = 'Пин-код должен состоять из 4 цифр';
                         return;
                     }
-                    
+
                     // В реальном приложении здесь должна быть проверка через API
                     const correctPin = localStorage.getItem(`pin_${userId}`);
-                    
+
                     if (pinCode === correctPin) {
-                        tg.sendData(JSON.stringify({
-                            action: 'verify_pin',
-                            deal_id: dealId,
-                            pin_code: pinCode,
-                            user_id: userId
-                        }));
+                        tg.sendData(
+                            JSON.stringify({
+                                action: 'verify_pin',
+                                deal_id: dealId,
+                                pin_code: pinCode,
+                                user_id: userId,
+                            })
+                        );
                     } else {
                         error.textContent = 'Неверный пин-код';
                     }
@@ -139,31 +214,33 @@
                     // Создание пин-кода
                     const newPin = newPinInput.value;
                     const confirmPin = confirmPinInput.value;
-                    
+
                     if (newPin.length !== 4 || !/^\d+$/.test(newPin)) {
                         error.textContent = 'Пин-код должен состоять из 4 цифр';
                         return;
                     }
-                    
+
                     if (newPin !== confirmPin) {
                         error.textContent = 'Пин-коды не совпадают';
                         return;
                     }
-                    
+
                     // В реальном приложении здесь должно быть сохранение через API
                     localStorage.setItem(`pin_${userId}`, newPin);
-                    
-                    tg.sendData(JSON.stringify({
-                        action: 'create_pin',
-                        deal_id: dealId,
-                        pin_code: newPin,
-                        confirm_pin: confirmPin,
-                        user_id: userId
-                    }));
+
+                    tg.sendData(
+                        JSON.stringify({
+                            action: 'create_pin',
+                            deal_id: dealId,
+                            pin_code: newPin,
+                            confirm_pin: confirmPin,
+                            user_id: userId,
+                        })
+                    );
                 }
             });
         }
-        
+
         init();
     </script>
 </body>
