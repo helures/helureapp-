@@ -1,206 +1,553 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Подтверждение сделки</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<style>
-  body {
-    margin: 0;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #001f3f;
-    color: #a0cfff;
-  }
-  .container {
-    background: #003366;
-    border-radius: 12px;
-    padding: 25px 20px;
-    width: 320px;
-    box-shadow: 0 0 15px #3399ffaa;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-  h2 {
-    margin: 0;
-    text-align: center;
-    font-weight: 600;
-    text-shadow: 0 0 8px #66b3ffcc;
-  }
-  input {
-    padding: 12px 14px;
-    border-radius: 8px;
-    border: 2px solid #3399ff;
-    background: #002244;
-    color: #a0cfff;
-    font-size: 16px;
-    outline: none;
-    transition: border-color 0.3s;
-  }
-  input::placeholder {
-    color: #6699ccaa;
-  }
-  input:focus {
-    border-color: #66b3ff;
-    background: #004080;
-  }
-  button {
-    padding: 12px 0;
-    background: transparent;
-    border: 2px solid #3399ff;
-    border-radius: 12px;
-    color: #a0cfff;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 0 12px #3399ffaa;
-    transition: box-shadow 0.3s;
-  }
-  button:hover:not(:disabled) {
-    box-shadow: 0 0 20px #66b3ff;
-  }
-  button:disabled {
-    border-color: #004466;
-    color: #446688;
-    cursor: not-allowed;
-    box-shadow: none;
-  }
-  .error {
-    color: #ff6666;
-    text-align: center;
-    min-height: 18px;
-    user-select: none;
-    text-shadow: 0 0 3px #ff666688;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escrow Trust - Надёжный гарант сделок</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --primary-blue: #1a73e8;
+            --dark-blue: #0d47a1;
+            --light-blue: #e8f0fe;
+            --accent-blue: #4285f4;
+            --text-dark: #202124;
+            --text-light: #5f6368;
+        }
+        
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text-dark);
+            background-color: #f8f9fa;
+            line-height: 1.6;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .logo-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            transition: all 0.5s ease;
+            z-index: 2;
+        }
+        
+        .logo:hover .logo-img {
+            transform: rotateY(180deg);
+        }
+        
+        .logo-icon::before {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: conic-gradient(var(--primary-blue) 0%, var(--dark-blue) 100%);
+            animation: rotate 3s linear infinite;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .logo:hover .logo-icon::before {
+            opacity: 1;
+        }
+        
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            position: relative;
+        }
+        
+        .logo-text::after {
+            content: "";
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: white;
+            bottom: -5px;
+            left: 0;
+            transition: width 0.3s ease;
+        }
+        
+        .logo:hover .logo-text::after {
+            width: 100%;
+        }
+        
+        .nav-btn {
+            background: white;
+            color: var(--primary-blue);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 24px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        
+        .nav-btn:hover {
+            background: var(--light-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .nav-btn i {
+            margin-left: 8px;
+        }
+        
+        .hero {
+            background: linear-gradient(rgba(26, 115, 232, 0.9), rgba(13, 71, 161, 0.9)), url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            animation: fadeInDown 1s;
+        }
+        
+        .hero p {
+            font-size: 20px;
+            max-width: 700px;
+            margin: 0 auto 30px;
+            animation: fadeInUp 1s;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: white;
+            color: var(--primary-blue);
+            padding: 12px 30px;
+            border-radius: 24px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            animation: fadeIn 1.5s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section {
+            padding: 80px 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+        }
+        
+        .section-title h2 {
+            font-size: 36px;
+            color: var(--primary-blue);
+            display: inline-block;
+            padding-bottom: 10px;
+        }
+        
+        .section-title h2::after {
+            content: "";
+            position: absolute;
+            width: 60px;
+            height: 3px;
+            background: var(--primary-blue);
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .features {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            width: 300px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--light-blue);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-icon i {
+            font-size: 36px;
+            color: var(--primary-blue);
+            z-index: 2;
+        }
+        
+        .feature-icon::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-blue);
+            border-radius: 50%;
+            transform: scale(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover .feature-icon::after {
+            transform: scale(1);
+        }
+        
+        .feature-card:hover .feature-icon i {
+            color: white;
+        }
+        
+        .feature-card h3 {
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+        }
+        
+        .steps {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .step:hover {
+            transform: translateX(10px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: var(--light-blue);
+            color: var(--primary-blue);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 20px;
+            margin-right: 20px;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .step:hover .step-number {
+            background: var(--primary-blue);
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        .step-content h3 {
+            color: var(--primary-blue);
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        
+        .trust-counter {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--primary-blue);
+            text-align: center;
+            margin: 30px 0;
+            animation: pulse 2s infinite;
+        }
+        
+        footer {
+            background: var(--dark-blue);
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+        }
+        
+        .footer-logo {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: var(--light-blue);
+        }
+        
+        .copyright {
+            opacity: 0.8;
+            font-size: 14px;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-  <div class="container" id="pinForm">
-    <h2 id="title">Введите ваш пин-код</h2>
-    <div id="createPinFields" style="display:none;">
-      <input type="password" id="newPin" placeholder="Новый пин-код (4 цифры)" maxlength="4" inputmode="numeric" />
-      <input type="password" id="confirmPin" placeholder="Подтвердите пин-код" maxlength="4" inputmode="numeric" />
-    </div>
-    <div id="verifyPinField">
-      <input type="password" id="pinCode" placeholder="Пин-код (4 цифры)" maxlength="4" inputmode="numeric" />
-    </div>
-    <p id="error" class="error"></p>
-    <button id="submitBtn" disabled>Подтвердить</button>
-  </div>
-
-<script>
-  const tg = window.Telegram.WebApp;
-  tg.expand();
-
-  const urlParams = new URLSearchParams(window.location.search);
-  const dealId = urlParams.get('deal_id');
-  const userId = urlParams.get('user_id');
-
-  let hasPin = false;
-
-  function checkPinExists() {
-    return localStorage.getItem(`pin_${userId}`) !== null;
-  }
-
-  function init() {
-    hasPin = checkPinExists();
-
-    const title = document.getElementById('title');
-    const createPinFields = document.getElementById('createPinFields');
-    const verifyPinField = document.getElementById('verifyPinField');
-    const error = document.getElementById('error');
-    const submitBtn = document.getElementById('submitBtn');
-    const newPinInput = document.getElementById('newPin');
-    const confirmPinInput = document.getElementById('confirmPin');
-    const pinCodeInput = document.getElementById('pinCode');
-
-    if (hasPin) {
-      title.textContent = 'Введите ваш пин-код';
-      createPinFields.style.display = 'none';
-      verifyPinField.style.display = 'block';
-    } else {
-      title.textContent = 'Создайте пин-код';
-      createPinFields.style.display = 'flex';
-      createPinFields.style.flexDirection = 'column';
-      createPinFields.style.gap = '10px';
-      verifyPinField.style.display = 'none';
-    }
-
-    function validateInputs() {
-      if (hasPin) {
-        submitBtn.disabled = pinCodeInput.value.length !== 4 || !/^\d{4}$/.test(pinCodeInput.value);
-      } else {
-        submitBtn.disabled =
-          newPinInput.value.length !== 4 ||
-          confirmPinInput.value.length !== 4 ||
-          newPinInput.value !== confirmPinInput.value ||
-          !/^\d{4}$/.test(newPinInput.value);
-      }
-      error.textContent = '';
-    }
-
-    newPinInput?.addEventListener('input', validateInputs);
-    confirmPinInput?.addEventListener('input', validateInputs);
-    pinCodeInput?.addEventListener('input', validateInputs);
-
-    submitBtn.addEventListener('click', () => {
-      if (hasPin) {
-        const pinCode = pinCodeInput.value;
-        if (pinCode.length !== 4 || !/^\d{4}$/.test(pinCode)) {
-          error.textContent = 'Пин-код должен состоять из 4 цифр';
-          return;
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <img src="https://i.ibb.co/0j62pDZd/photo-2025-06-06-09-45-02.jpg" alt="Escrow Trust Logo" class="logo-img">
+                    </div>
+                    <div class="logo-text">Escrow Trust</div>
+                </div>
+                <a href="https://t.me/EscrowTrustRobot" class="nav-btn">
+                    Перейти в бота <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </header>
+    
+    <section class="hero">
+        <div class="container">
+            <h1 class="animate__animated animate__fadeInDown">Безопасные сделки с гарантией</h1>
+            <p class="animate__animated animate__fadeInUp">Escrow Trust - ваш надёжный посредник в сделках. Мы гарантируем безопасность и честность каждой транзакции.</p>
+            <a href="https://t.me/EscrowTrustRobot" class="btn animate__animated animate__fadeIn">Начать сделку</a>
+        </div>
+    </section>
+    
+    <section class="section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Почему именно мы?</h2>
+            </div>
+            <div class="features">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>100% безопасность</h3>
+                    <p>Все сделки защищены многоуровневой системой проверки. Ваши средства или товар в безопасности во время всей сделки.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>Мгновенные сделки</h3>
+                    <p>Создавайте и завершайте сделки за считанные минуты. Быстро, просто и без лишних сложностей.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h3>Поддержка 24/7</h3>
+                    <p>Наша команда поддержки всегда готова помочь вам с любыми вопросами в любое время суток.</p>
+                </div>
+            </div>
+            
+            <div class="trust-counter" id="trustCounter">
+                Нам доверяют <span id="counterValue">10,000+</span> пользователей
+            </div>
+        </div>
+    </section>
+    
+    <section class="section" style="background: var(--light-blue);">
+        <div class="container">
+            <div class="section-title">
+                <h2>Как это работает?</h2>
+            </div>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Привязка кошелька</h3>
+                        <p>Подключите ваш криптовалютный кошелёк к системе для возможности проведения безопасных сделок.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Выбор валюты</h3>
+                        <p>Производите сделки непосредственно с указанной вами валютой, на выбор множество валют, даже Telegram Stars.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Создание сделки</h3>
+                        <p>Инициируйте новую сделку, указав все необходимые параметры: сумму, описание товара/услуги и условия.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Оплата сделки</h3>
+                        <p>Покупатель производит оплату, средства блокируются на гарантийном счёте до выполнения условий.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>Исполнение обязательств</h3>
+                        <p>Продавец выполняет свои обязательства по сделке (поставка товара, оказание услуги).</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">6</div>
+                    <div class="step-content">
+                        <h3>Подтверждение получения</h3>
+                        <p>Покупатель подтверждает получение товара/услуги в соответствии с условиями сделки.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">7</div>
+                    <div class="step-content">
+                        <h3>Завершение сделки</h3>
+                        <p>Средства автоматически переводятся продавцу на указанный кошелёк или банковскую карту.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-logo">Escrow Trust</div>
+            <div class="footer-links">
+                <a href="https://t.me/EscrowTrustRobot">Перейти в бота</a>
+                <a href="https://t.me/EscrowTrustSupport">Контакты</a>
+                <a href="#">Политика конфиденциальности</a>
+            </div>
+            <div class="copyright">
+                © 2025 Escrow Trust. Все права защищены.
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        // Анимация счётчика доверия
+        function animateCounter() {
+            const min = 10000;
+            const max = 11321;
+            const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+            const formattedNumber = randomNumber.toLocaleString();
+            
+            document.getElementById('counterValue').textContent = formattedNumber + '+';
+            
+            // Добавляем анимацию
+            const counter = document.getElementById('trustCounter');
+            counter.classList.add('animate__animated', 'animate__pulse');
+            setTimeout(() => {
+                counter.classList.remove('animate__animated', 'animate__pulse');
+            }, 1000);
         }
-
-        const correctPin = localStorage.getItem(`pin_${userId}`);
-
-        if (pinCode === correctPin) {
-          tg.sendData(JSON.stringify({
-            action: 'verify_pin',
-            deal_id: dealId,
-            pin_code: pinCode,
-            user_id: userId,
-          }));
-          error.textContent = 'Данные отправлены, ждите подтверждения...';
-          submitBtn.disabled = true;
-        } else {
-          error.textContent = 'Неверный пин-код';
-        }
-      } else {
-        const newPin = newPinInput.value;
-        const confirmPin = confirmPinInput.value;
-
-        if (newPin.length !== 4 || !/^\d{4}$/.test(newPin)) {
-          error.textContent = 'Пин-код должен состоять из 4 цифр';
-          return;
-        }
-
-        if (newPin !== confirmPin) {
-          error.textContent = 'Пин-коды не совпадают';
-          return;
-        }
-
-        localStorage.setItem(`pin_${userId}`, newPin);
-
-        tg.sendData(JSON.stringify({
-          action: 'create_pin',
-          deal_id: dealId,
-          pin_code: newPin,
-          user_id: userId,
-        }));
-
-        error.textContent = 'Пин-код создан и данные отправлены';
-        submitBtn.disabled = true;
-      }
-    });
-
-    validateInputs();
-  }
-
-  init();
-</script>
+        
+        // Обновляем счётчик каждые 5 секунд
+        setInterval(animateCounter, 20000);
+        
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', animateCounter);
+    </script>
 </body>
 </html>
